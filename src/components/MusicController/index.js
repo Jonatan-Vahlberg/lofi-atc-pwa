@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import useYoutube from "../../utils/hooks/useYoutube"
 import Youtube from "react-youtube";
 import VolumeControl from "./VolumeControl";
+import { useRadio } from "../../utils/context/RadioContext";
 
 
 const MusicController = () => {
     const [selectedVideo, changeSelectedVideo] = useYoutube();
+    const radio = useRadio()
     const [volume, setVolume] = useState(60);
 
     const [currentState, setCurrentState] = useState("paused");
@@ -13,7 +15,7 @@ const MusicController = () => {
     const youtubeRef = useRef(null);
 
     useEffect(() => {
-        changeSelectedVideo('8YA825ZNAIE')
+        // changeSelectedVideo('8YA825ZNAIE')
     },[])
 
     // useEffect(() => {
@@ -40,13 +42,15 @@ const MusicController = () => {
         youtubeRef.current.internalPlayer.setVolume(volume)
         setVolume(volume);
     }
-
-    console.log("SELECTED ",selectedVideo?.id);
-
-
+    console.log("station", radio.state.station)
     return <div className="music-controller">
         <h1>Music Controller</h1>
-        <select onChange={(e) => changeSelectedVideo(e.target.value)}>
+        {radio.state.station && <p>Now playing: {radio.state.station?.snippet?.title}</p>}
+        <select 
+        value={radio.state.station?.id}
+        onChange={(e) => {
+            radio.getStation(e.target.value, true)
+        }}>
             <option value="jfKfPfyJRdk">lofi hip hop radio 📚 - beats to relax/study to
 </option>
             <option value="MVPTGNGiI-4">synthwave radio 🌌 - beats to chill/game to
@@ -61,8 +65,8 @@ const MusicController = () => {
             {currentState === "paused" ? "Play" : "Pause"}
         </button>
      
-       {selectedVideo && <Youtube
-         videoId={selectedVideo?.id}
+       {radio.state.station && <Youtube
+         videoId={radio.state.station?.id}
          id="youtube-player"
          style={{
            display: "none" 

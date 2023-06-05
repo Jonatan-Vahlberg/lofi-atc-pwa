@@ -43,7 +43,7 @@ const VolumeControl = ({ volume, setVolume }) => {
         <div className="volume-control">
             {options.map((option) => (
                 <button
-                    key={option}
+                    key={option.value}
                     onClick={() => setVolume(option.value)}
                     style={{
                         backgroundColor: "transparent",

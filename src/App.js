@@ -12,7 +12,7 @@ function App() {
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
-    >
+      >
       <MusicController/>
     </div>
   );
