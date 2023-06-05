@@ -1,3 +1,4 @@
+import { useSettings } from "../../utils/context/SettingsContext";
 
 const options = [
     {
@@ -38,16 +39,17 @@ const options = [
     }
   ];
 
-const VolumeControl = ({ volume, setVolume }) => {
+const VolumeControl = () => {
+  const settings = useSettings()
     return (
         <div className="volume-control">
             {options.map((option) => (
                 <button
                     key={option.value}
-                    onClick={() => setVolume(option.value)}
+                    onClick={() => settings.setVolume(option.value)}
                     style={{
                         backgroundColor: "transparent",
-                        color: volume >= option.value ? option.selectedColor : option.color,
+                        color: settings.state.volume >= option.value ? option.selectedColor : option.color,
                         border: "none",
                         fontSize: "1.5rem",
                         

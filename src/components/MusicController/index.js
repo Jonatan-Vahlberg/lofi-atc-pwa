@@ -3,10 +3,11 @@ import useYoutube from "../../utils/hooks/useYoutube"
 import Youtube from "react-youtube";
 import VolumeControl from "./VolumeControl";
 import { useRadio } from "../../utils/context/RadioContext";
+import { useSettings } from "../../utils/context/SettingsContext";
 
 
 const MusicController = () => {
-    const [selectedVideo, changeSelectedVideo] = useYoutube();
+    const settings = useSettings()
     const radio = useRadio()
     const [volume, setVolume] = useState(60);
 
@@ -17,6 +18,12 @@ const MusicController = () => {
     useEffect(() => {
         // changeSelectedVideo('8YA825ZNAIE')
     },[])
+
+    useEffect(() => {
+        if(youtubeRef.current){
+            youtubeRef.current.internalPlayer.setVolume(settings.state.volume)
+        }
+    },[settings.state.volume])
 
     // useEffect(() => {
     //     console.log("AFTER CHANGES",selectedVideo, currentState);
