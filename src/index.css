@@ -39,3 +39,10 @@ body, html {
     padding: 16px;
     border-radius: 8px;
   }
+
+  .icon-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+  }

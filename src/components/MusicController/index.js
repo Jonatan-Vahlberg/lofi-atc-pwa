@@ -4,19 +4,29 @@ import Youtube from "react-youtube";
 import VolumeControl from "./VolumeControl";
 import { useRadio } from "../../utils/context/RadioContext";
 import { useSettings } from "../../utils/context/SettingsContext";
+import RadioControls from "./RadioControls";
 
 
-const MusicController = () => {
+const Radio = () => {
     const settings = useSettings()
     const radio = useRadio()
     const [volume, setVolume] = useState(60);
 
-    const [currentState, setCurrentState] = useState("paused");
+    const [playState, setPlayState] = useState("paused");
 
     const youtubeRef = useRef(null);
+    
 
     useEffect(() => {
         // changeSelectedVideo('8YA825ZNAIE')
+//         <option value="jfKfPfyJRdk">lofi hip hop radio 📚 - beats to relax/study to
+// </option>
+//             <option value="MVPTGNGiI-4">synthwave radio 🌌 - beats to chill/game to
+// </option>
+//             <option value="DHHgoAMflOs">Medieval Lofi 24/7
+// </option>
+//             <option value="8YA825ZNAIE">Coding in Chicago v2.0 | 🎧 24/7 LoFi Hip-Hop Radio
+// </option>
     },[])
 
     useEffect(() => {
@@ -33,13 +43,30 @@ const MusicController = () => {
     // },[selectedVideo, currentState])
 
     const toggleState = () => {
-        console.log("TOGGLE",currentState, youtubeRef.current?.internalPlayer)
-        if(currentState === "paused"){
-            setCurrentState("playing");
+        console.log("TOGGLE",playState, youtubeRef.current?.internalPlayer)
+        if(playState === "paused"){
+            setPlayState("playing");
             youtubeRef.current.internalPlayer.playVideo();
         } else {
-            setCurrentState("paused");
+            setPlayState("paused");
             youtubeRef.current.internalPlayer.pauseVideo();
+        }
+    }
+
+    const changeStation = (station, modifier = 1) => {
+        if(station){
+            radio.setStation(station);
+        }
+        else {
+            let currentStationIndex = radio.state.stations.findIndex((s) => s.id === radio.state.station.id);
+            let nextStationIndex = currentStationIndex + modifier;
+
+            if(nextStationIndex < 0){
+                nextStationIndex = radio.state.stations.length - 1;
+            } else if(nextStationIndex >= radio.state.stations.length){
+                nextStationIndex = 0;
+            }
+            radio.setStation(radio.state.stations[nextStationIndex]);
         }
     }
 
@@ -53,25 +80,12 @@ const MusicController = () => {
     return <div className="music-controller">
         <h1>Music Controller</h1>
         {radio.state.station && <p>Now playing: {radio.state.station?.snippet?.title}</p>}
-        <select 
-        value={radio.state.station?.id}
-        onChange={(e) => {
-            radio.getStation(e.target.value, true)
-        }}>
-            <option value="jfKfPfyJRdk">lofi hip hop radio 📚 - beats to relax/study to
-</option>
-            <option value="MVPTGNGiI-4">synthwave radio 🌌 - beats to chill/game to
-</option>
-            <option value="DHHgoAMflOs">Medieval Lofi 24/7
-</option>
-            <option value="8YA825ZNAIE">Coding in Chicago v2.0 | 🎧 24/7 LoFi Hip-Hop Radio
-</option>
-        </select>
-        
-        <button onClick={toggleState}>
-            {currentState === "paused" ? "Play" : "Pause"}
-        </button>
-     
+       < RadioControls
+        playState={playState}
+        togglePlayState={toggleState}
+        changeStation={changeStation}
+       />
+
        {radio.state.station && <Youtube
          videoId={radio.state.station?.id}
          id="youtube-player"
@@ -87,18 +101,18 @@ const MusicController = () => {
                         break;
                     case 1:
                         console.log("PLAYING");
-                        setCurrentState("playing");
+                        setPlayState("playing");
                         break;
                     case 2:
                         console.log("PAUSED");
-                        setCurrentState("paused");
+                        setPlayState("paused");
                         break;
                     case 3:
                         console.log("BUFFERING");
                         break;
                     case 5:
                         console.log("CUED");
-                        if(currentState === "playing"){
+                        if(playState === "playing"){
                             youtubeRef.current.internalPlayer.playVideo();
                         }
                         break;
@@ -118,4 +132,4 @@ const MusicController = () => {
 
 }
 
-export default MusicController;
+export default Radio;

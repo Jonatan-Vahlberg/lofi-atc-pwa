@@ -1,5 +1,5 @@
 import { useState } from "react";
-import MusicController from "./components/MusicController";
+import Radio from "./components/MusicController";
 // MATH get random number between 10 and 83
 function App() {
 
@@ -13,7 +13,7 @@ function App() {
         backgroundPosition: "center",
       }}
       >
-      <MusicController/>
+      <Radio/>
     </div>
   );
 }

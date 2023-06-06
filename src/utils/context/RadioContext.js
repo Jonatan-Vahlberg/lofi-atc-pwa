@@ -32,9 +32,10 @@ const atcReducer = (state, action) => {
 
 const RadioContext = React.createContext({
     state: defaultState,
+    searchStations: (searchKey = "") => {},
     getStation: (stationKey = "", setStorage = false) => {},
-    setStation: (stationKey) => {},
-    setStations: (searchKey) => {},
+    setStation: (station, setStorage = true) => {},
+    setStations: (stations = [], setStorage = true) => {},
     setFavouriteStations: (stations = []) => {}
 })
 
@@ -42,6 +43,7 @@ const RadioProvider = ({ children }) => {
     const [state, dispatch] = React.useReducer(atcReducer, defaultState)
 
     React.useEffect(() => {
+        const favouriteStations = radioStorageKit.getFavouriteStations()
         const station = radioStorageKit.getRadioStation()
         console.log("station CONTEXT", typeof station)
         if(station) {
@@ -50,6 +52,8 @@ const RadioProvider = ({ children }) => {
         else {
             getStation("", false)
         }
+        setFavouriteStations(favouriteStations)
+
     }, [])
 
     const getStation = (stationKey = "", setStorage = false) => {
@@ -65,6 +69,16 @@ const RadioProvider = ({ children }) => {
         })
     }
 
+    const searchStations = (searchKey = "") => {
+        youtubeClient.searchVideos(searchKey)
+            .then((response) => {
+                setStations(response.data)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
     const setStation = (station, setStorage = true) => {
         dispatch({
             type: 'SET_STATION',
@@ -74,18 +88,13 @@ const RadioProvider = ({ children }) => {
             radioStorageKit.setRadioStation(station)
         }
     }
+    
 
-    const setStations = (searchKey = "") => {
-        youtubeClient.searchVideos(searchKey)
-            .then((response) => {
-                dispatch({
-                    type: 'SET_STATIONS',
-                    payload: response.data
-                })
-            })
-            .catch((error) => {
-                console.log(error)
-            })
+    const setStations = (statons) => {
+        dispatch({
+            type: 'SET_STATIONS',
+            payload: statons
+        })
     }
 
     const setFavouriteStations = (stations = []) => {
@@ -97,7 +106,8 @@ const RadioProvider = ({ children }) => {
     }
     
     return (
-        <RadioContext.Provider value={{ state, 
+        <RadioContext.Provider value={{ state,
+            searchStations,
             getStation,
             setStation,
             setStations,
